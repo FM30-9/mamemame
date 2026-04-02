@@ -179,4 +179,38 @@ document.addEventListener('click', (e) => {
     if (!keywordSearch.contains(e.target) && !searchResults.contains(e.target) && !resetBtn.contains(e.target)) searchResults.classList.add('hidden');
 });
 
+// --- バックアップ（ダウンロード）機能 ---
+const downloadBtn = document.getElementById('download-btn');
+
+downloadBtn.onclick = () => {
+    // 1. localStorageから現在のデータを取得
+    const data = localStorage.getItem('dailyEmojiData');
+
+    if (!data || data === '{}') {
+        alert("保存するデータがまだありません。");
+        return;
+    }
+
+    // 2. データを「Blob（データの塊）」に変換
+    // JSON形式を見やすく整形（スペース2つ分）して格納します
+    const blob = new Blob([data], { type: 'application/CSV' });
+
+    // 3. ダウンロード用のURLを作成
+    const url = URL.createObjectURL(blob);
+
+    // 4. 一時的な <a> タグを作ってクリックさせる
+    const a = document.createElement('a');
+    a.href = url;
+
+    // ファイル名に今日の日付を入れる（例: emoji_backup_2026-04-02.json）
+    const today = new Date().toISOString().split('T')[0];
+    a.download = `emoji_backup_${today}.CSV`;
+
+    // ダウンロード実行
+    a.click();
+
+    // 5. 使い終わったURLを解放してメモリを節約
+    setTimeout(() => URL.revokeObjectURL(url), 100);
+};
+
 renderCalendar();
