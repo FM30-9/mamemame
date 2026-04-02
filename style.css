@@ -40,6 +40,24 @@ body {
     cursor: pointer;
 }
 
+/* バックアップボタン */
+.download-btn {
+    background: #7697bd;
+    color: white;
+    border: none;
+    padding: 0 12px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-size: 0.8rem;
+    white-space: nowrap;
+    /* 文字が折り返さないように */
+    transition: background 0.2s;
+}
+
+.download-btn:active {
+    background: #357abd;
+    /* 押した時に少し暗く */
+}
 /* 検索エリア */
 .search-area {
     margin-bottom: 20px;
