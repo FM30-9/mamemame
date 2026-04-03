@@ -179,38 +179,55 @@ document.addEventListener('click', (e) => {
     if (!keywordSearch.contains(e.target) && !searchResults.contains(e.target) && !resetBtn.contains(e.target)) searchResults.classList.add('hidden');
 });
 
-// --- バックアップ（ダウンロード）機能 ---
 const downloadBtn = document.getElementById('download-btn');
 
 downloadBtn.onclick = () => {
-    // 1. localStorageから現在のデータを取得
-    const data = localStorage.getItem('dailyEmojiData');
-
-    if (!data || data === '{}') {
+    // 1. localStorageからデータを取得してオブジェクトに変換
+    const rawData = localStorage.getItem('dailyEmojiData');
+    if (!rawData || rawData === '{}') {
         alert("保存するデータがまだありません。");
         return;
     }
+    const data = JSON.parse(rawData);
 
-    // 2. データを「Blob（データの塊）」に変換
-    // JSON形式を見やすく整形（スペース2つ分）して格納します
-    const blob = new Blob([data], { type: 'application/CSV' });
+    // 2. CSVのヘッダー（1行目）を作成
+    let csvContent = "日付,気分,スタンプ,メモ\n";
 
-    // 3. ダウンロード用のURLを作成
+    // 3. データを日付順に並び替えて、1行ずつCSV形式に変換
+    Object.keys(data).sort().forEach(date => {
+        const entry = data[date];
+
+        // 数値の気分を絵文字に戻す（読みやすさ重視）
+        const moodEmoji = getMoodEmoji(entry.mood);
+
+        // スタンプ（配列）をスペース区切りの文字列にする
+        const tags = entry.tags.join(' ');
+
+        // メモ内の改行やダブルクォーテーションがCSVを壊さないように調整
+        const safeNote = entry.note.replace(/"/g, '""').replace(/\n/g, ' ');
+
+        // カンマ区切りで1行分を追加
+        csvContent += `${date},${moodEmoji},"${tags}","${safeNote}"\n`;
+    });
+
+    // 4. 文字化け防止（BOM付きUTF-8）の設定
+    // これを入れないと、Excelで開いたときに日本語が文字化けします
+    const bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
+    const blob = new Blob([bom, csvContent], { type: 'text/csv;charset=utf-8;' });
+
+    // 5. ダウンロード実行
     const url = URL.createObjectURL(blob);
-
-    // 4. 一時的な <a> タグを作ってクリックさせる
     const a = document.createElement('a');
     a.href = url;
-
-    // ファイル名に今日の日付を入れる（例: emoji_backup_2026-04-02.json）
     const today = new Date().toISOString().split('T')[0];
-    a.download = `emoji_backup_${today}.CSV`;
-
-    // ダウンロード実行
+    a.download = `diary_backup_${today}.csv`;
     a.click();
 
-    // 5. 使い終わったURLを解放してメモリを節約
+    // 6. 後片付け
     setTimeout(() => URL.revokeObjectURL(url), 100);
 };
 
+
+
 renderCalendar();
+
