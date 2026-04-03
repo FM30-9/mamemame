@@ -31,78 +31,151 @@
                 <div id="emoji-dropdown" class="emoji-dropdown hidden">
                     <p class="dropdown-label">気分から探す</p>
                     <div class="emoji-grid-sm" id="mood-search-options">
-                        <span class="search-emoji-item" data-val="1">😞</span>
-                        <span class="search-emoji-item" data-val="2">😐</span>
-                        <span class="search-emoji-item" data-val="3">🙂</span>
-                        <span class="search-emoji-item" data-val="4">😊</span>
                         <span class="search-emoji-item" data-val="5">🤩</span>
+                        <span class="search-emoji-item" data-val="4">😊</span>
+                        <span class="search-emoji-item" data-val="3">🙂</span>
+                        <span class="search-emoji-item" data-val="2">😐</span>
+                        <span class="search-emoji-item" data-val="1">😞</span>
                     </div>
                     <p class="dropdown-label">スタンプから探す</p>
                     <div class="emoji-grid-sm">
-                        <span class="search-emoji-item">☀️</span><span class="search-emoji-item">☔</span>
-                        <span class="search-emoji-item">🍚</span><span class="search-emoji-item">🍜</span>
-                        <span class="search-emoji-item">💻</span><span class="search-emoji-item">🎮</span>
-                        <span class="search-emoji-item">📺</span><span class="search-emoji-item">💤</span>
+                        <span class="search-emoji-item">☀️</span><span class="search-emoji-item">☁️</span>
+                        <span class="search-emoji-item">☔</span>
+                        <span class="search-emoji-item">🌪️</span>
+                        <span class="search-emoji-item">🍞</span>
+                        <span class="search-emoji-item">🍜</span>
+                        <span class="search-emoji-item">🍚</span>
+                        <span class="search-emoji-item">🍪</span>
+                        <span class="search-emoji-item">💤</span>
+                        <span class="search-emoji-item">🎀</span>
+                        <span class="search-emoji-item">💊</span>
+                        <span class="search-emoji-item">🏥</span>
+                        <span class="search-emoji-item">😷</span>
+                        <span class="search-emoji-item">👍</span>
+                        <span class="search-emoji-item">🪥</span>
+                        <span class="search-emoji-item">🦴</span>
+                        <span class="search-emoji-item">👟</span>
+                        <span class="search-emoji-item">💪</span>
+                        <span class="search-emoji-item">💻</span>
+                        <span class="search-emoji-item">📖</span>
+                    </div>
+                </div>
+
+                <div id="search-results" class="search-results hidden"></div>
+            </div>
+
+            <div class="weekdays">
+                <div>日</div>
+                <div>月</div>
+                <div>火</div>
+                <div>水</div>
+                <div>木</div>
+                <div>金</div>
+                <div>土</div>
+            </div>
+
+            <div id="calendar" class="calendar-grid"></div>
+
+            <div id="modal-overlay" class="modal-overlay hidden">
+                <div class="editor-modal">
+                    <h2 id="selected-date-label">日付</h2>
+                    <div class="field">
+                        <h3>今日の気分</h3>
+                        <p id="mood-warning" class="warning-text hidden">気分を選んでね ✨</p>
+                        <div class="mood-selector">
+                            <button class="mood-item" data-mood="5"><span class="emoji">🤩</span><span
+                                    class="label">最高</span></button>
+                            <button class="mood-item" data-mood="4"><span class="emoji">😊</span><span
+                                    class="label">良い</span></button>
+                            <button class="mood-item" data-mood="3"><span class="emoji">🙂</span><span
+                                    class="label">普通</span></button>
+                            <button class="mood-item" data-mood="2"><span class="emoji">😐</span><span
+                                    class="label">悪め</span></button>
+                            <button class="mood-item" data-mood="1"><span class="emoji">😞</span><span
+                                    class="label">憂鬱</span></button>
+                        </div>
+                    </div>
+                    <div class="field">
+                        <h3>天気</h3>
+                        <div class="emoji-tags">
+                            <button class="tag-item"><span class="emoji">☀️</span><span class="label">晴れ</span></button>
+                            <button class="tag-item"><span class="emoji">☁️</span><span
+                                    class="label">くもり</span></button>
+                            <button class="tag-item"><span class="emoji">☔</span><span class="label">雨</span></button>
+                            <button class="tag-item"><span class="emoji">🌪️</span><span class="label">風</span></button>
+                        </div>
+
+                        <h3>ご飯</h3>
+                        <div class="emoji-tags">
+                            <button class="tag-item"><span class="emoji">🍞</span><span class="label">朝飯</span></button>
+                            <button class="tag-item"><span class="emoji">🍜</span><span class="label">昼飯</span></button>
+                            <button class="tag-item"><span class="emoji">🍚</span><span class="label">夜飯</span></button>
+                            <button class="tag-item"><span class="emoji">🍪</span><span class="label">間食</span></button>
+                        </div>
+
+                        <h3>健康</h3>
+                        <div class="emoji-tags">
+                            <button class="tag-item"><span class="emoji">💤</span><span class="label">昼寝</span></button>
+                            <button class="tag-item"><span class="emoji">🎀</span><span class="label">生理</span></button>
+                            <button class="tag-item"><span class="emoji">💊</span><span class="label">薬</span></button>
+                            <button class="tag-item"><span class="emoji">🏥</span><span class="label">病院</span></button>
+                            <button class="tag-item"><span class="emoji">😷</span><span
+                                    class="label">体調不良</span></button>
+                            <button class="tag-item"><span class="emoji">👍</span><span
+                                    class="label">爪切り</span></button>
+                            <button class="tag-item"><span class="emoji">🪥</span><span
+                                    class="label">歯磨き</span></button>
+                        </div>
+
+                        <h3>達成</h3>
+                        <div class="emoji-tags">
+                            <button class="tag-item"><span class="emoji">🦴</span><span
+                                    class="label">筋肉痛</span></button>
+                            <button class="tag-item"><span class="emoji">👟</span><span class="label">外</span></button>
+                            <button class="tag-item"><span class="emoji">💪</span><span
+                                    class="label">筋トレ</span></button>
+                            <button class="tag-item"><span class="emoji">💻</span><span class="label">仕事</span></button>
+                            <button class="tag-item"><span class="emoji">📖</span><span class="label">勉強</span></button>
+                            <button class="tag-item"><span class="emoji">🧺</span><span class="label">洗濯</span></button>
+                            <button class="tag-item"><span class="emoji">🧹</span><span class="label">掃除</span></button>
+                        </div>
+
+                        <h3>感情</h3>
+                        <div class="emoji-tags">
+                            <button class="tag-item"><span class="emoji">✨</span><span class="label">楽しい</span></button>
+                            <button class="tag-item"><span class="emoji">🍀</span><span
+                                    class="label">幸せな</span></button>
+                            <button class="tag-item"><span class="emoji">🔥</span><span
+                                    class="label">意欲的</span></button>
+                            <button class="tag-item"><span class="emoji">🎊</span><span
+                                    class="label">嬉しい</span></button>
+                            <button class="tag-item"><span class="emoji">🏆</span><span
+                                    class="label">誇らしい</span></button>
+                            <button class="tag-item"><span class="emoji">🪑</span><span class="label">楽な</span></button>
+
+                            <button class="tag-item"><span class="emoji">🥀</span><span
+                                    class="label">憂鬱な</span></button>
+                            <button class="tag-item"><span class="emoji">🪽</span><span
+                                    class="label">疲れた</span></button>
+                            <button class="tag-item"><span class="emoji">🐳</span><span
+                                    class="label">悲しい</span></button>
+                            <button class="tag-item"><span class="emoji">🐾</span><span
+                                    class="label">悔しい</span></button>
+                            <button class="tag-item"><span class="emoji">👀</span><span
+                                    class="label">なんとなく</span></button>
+                            <button class="tag-item"><span class="emoji">💥</span><span
+                                    class="label">イライラ</span></button>
+                        </div>
+                    </div>
+                    <textarea id="note-input" placeholder="メモを入力..."></textarea>
+                    <div class="action-btns">
+                        <button id="save-btn" class="primary-btn">記録を保存</button>
+                        <button id="close-btn" class="secondary-btn">キャンセル</button>
                     </div>
                 </div>
             </div>
-
-            <div id="search-results" class="search-results hidden"></div>
         </div>
-
-        <div class="weekdays">
-            <div>日</div>
-            <div>月</div>
-            <div>火</div>
-            <div>水</div>
-            <div>木</div>
-            <div>金</div>
-            <div>土</div>
-        </div>
-
-        <div id="calendar" class="calendar-grid"></div>
-
-        <div id="modal-overlay" class="modal-overlay hidden">
-            <div class="editor-modal">
-                <h2 id="selected-date-label">日付</h2>
-                <div class="field">
-                    <h3>今日の気分</h3>
-                    <p id="mood-warning" class="warning-text hidden">気分を選んでね ✨</p>
-                    <div class="mood-selector">
-                        <button class="mood-item" data-mood="1"><span class="emoji">😞</span><span
-                                class="label">憂鬱</span></button>
-                        <button class="mood-item" data-mood="2"><span class="emoji">😐</span><span
-                                class="label">普通</span></button>
-                        <button class="mood-item" data-mood="3"><span class="emoji">🙂</span><span
-                                class="label">まあまあ</span></button>
-                        <button class="mood-item" data-mood="4"><span class="emoji">😊</span><span
-                                class="label">良い</span></button>
-                        <button class="mood-item" data-mood="5"><span class="emoji">🤩</span><span
-                                class="label">最高</span></button>
-                    </div>
-                </div>
-                <div class="field">
-                    <h3>スタンプ</h3>
-                    <div class="emoji-tags">
-                        <button class="tag-item"><span class="emoji">☀️</span><span class="label">晴れ</span></button>
-                        <button class="tag-item"><span class="emoji">☔</span><span class="label">雨</span></button>
-                        <button class="tag-item"><span class="emoji">🍚</span><span class="label">自炊</span></button>
-                        <button class="tag-item"><span class="emoji">🍜</span><span class="label">外食</span></button>
-                        <button class="tag-item"><span class="emoji">💻</span><span class="label">開発</span></button>
-                        <button class="tag-item"><span class="emoji">🎮</span><span class="label">ゲーム</span></button>
-                        <button class="tag-item"><span class="emoji">📺</span><span class="label">テレビ</span></button>
-                        <button class="tag-item"><span class="emoji">💤</span><span class="label">早寝</span></button>
-                    </div>
-                </div>
-                <textarea id="note-input" placeholder="メモを入力..."></textarea>
-                <div class="action-btns">
-                    <button id="save-btn" class="primary-btn">記録を保存</button>
-                    <button id="close-btn" class="secondary-btn">キャンセル</button>
-                </div>
-            </div>
-        </div>
-    </div>
-    <script src="script.js"></script>
+        <script src="script.js"></script>
 </body>
 
 </html>
