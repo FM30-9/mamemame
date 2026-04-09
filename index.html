@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>毎日絵文字 | Monthly Emoji Diary</title>
+    <title>毎日絵文字</title>
     <link rel="stylesheet" href="style.css">
 </head>
 
@@ -83,15 +83,15 @@
                         <h3>今日の気分</h3>
                         <p id="mood-warning" class="warning-text hidden">気分を選んでね ✨</p>
                         <div class="mood-selector">
-                            <button class="mood-item" data-mood="5"><span class="emoji">🤩</span><span
+                            <button class="mood-item" data-mood="5" id="mood5"><span class="emoji">🤩</span><span
                                     class="label">最高</span></button>
-                            <button class="mood-item" data-mood="4"><span class="emoji">😊</span><span
+                            <button class="mood-item" data-mood="4" id="mood4"><span class="emoji">😊</span><span
                                     class="label">良い</span></button>
-                            <button class="mood-item" data-mood="3"><span class="emoji">🙂</span><span
+                            <button class="mood-item" data-mood="3" id="mood3"><span class="emoji">🙂</span><span
                                     class="label">普通</span></button>
-                            <button class="mood-item" data-mood="2"><span class="emoji">😐</span><span
+                            <button class="mood-item" data-mood="2" id="mood2"><span class="emoji">😐</span><span
                                     class="label">悪め</span></button>
-                            <button class="mood-item" data-mood="1"><span class="emoji">😞</span><span
+                            <button class="mood-item" data-mood="1" id="mood1"><span class="emoji">😞</span><span
                                     class="label">憂鬱</span></button>
                         </div>
                     </div>
@@ -167,7 +167,7 @@
                                     class="label">イライラ</span></button>
                         </div>
                     </div>
-                    <textarea id="note-input" placeholder="メモを入力..."></textarea>
+                    <textarea id="note-input" placeholder="日記メモ..."></textarea>
                     <div class="action-btns">
                         <button id="save-btn" class="primary-btn">記録を保存</button>
                         <button id="close-btn" class="secondary-btn">キャンセル</button>
