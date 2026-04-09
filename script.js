@@ -148,6 +148,48 @@ document.getElementById('save-btn').onclick = () => {
     modalOverlay.classList.add('hidden');
     renderCalendar();
 };
+// --- スマホキーボード対策：Visual Viewport API ---
+if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', () => {
+        if (!modalOverlay.classList.contains('hidden')) {
+            // キーボードの高さを計算
+            const offset = window.innerHeight - window.visualViewport.height;
+
+            // モーダル全体をキーボード分だけ上に持ち上げる
+            // 入力欄が隠れるのを防ぐ
+            modalOverlay.style.bottom = `${offset}px`;
+
+            // スムーズにスクロールして入力欄を見せる
+            if (offset > 0) {
+                document.activeElement?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            }
+        } else {
+            modalOverlay.style.bottom = '0';
+        }
+    });
+}
+
+// --- モーダル開閉時の背景固定処理 ---
+const originalOpenEditor = openEditor;
+openEditor = (dateStr) => {
+    originalOpenEditor(dateStr); // 元の処理を実行
+    document.body.classList.add('modal-open'); // 背景スクロール禁止
+    modalOverlay.style.bottom = '0'; // 位置リセット
+};
+
+const originalCloseBtnClick = document.getElementById('close-btn').onclick;
+document.getElementById('close-btn').onclick = () => {
+    if (originalCloseBtnClick) originalCloseBtnClick();
+    document.body.classList.remove('modal-open'); // 背景スクロール解禁
+};
+
+// 保存時も背景固定を解除
+const originalSaveBtnClick = document.getElementById('save-btn').onclick;
+document.getElementById('save-btn').onclick = () => {
+    if (originalSaveBtnClick()) { // 保存成功時（バリデーションを通った時）
+        document.body.classList.remove('modal-open');
+    }
+};
 
 // UI更新
 document.getElementById('prev-month').onclick = () => { currentViewDate.setMonth(currentViewDate.getMonth() - 1); renderCalendar(); };
@@ -190,7 +232,7 @@ downloadBtn.onclick = () => {
     }
     const data = JSON.parse(rawData);
 
-    // 2. CSVのヘッダー（1行目）を作成
+    // 2. CSVのヘッダーを作成
     let csvContent = "日付,気分,スタンプ,メモ\n";
 
     // 3. データを日付順に並び替えて、1行ずつCSV形式に変換
@@ -211,7 +253,6 @@ downloadBtn.onclick = () => {
     });
 
     // 4. 文字化け防止（BOM付きUTF-8）の設定
-    // これを入れないと、Excelで開いたときに日本語が文字化けします
     const bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
     const blob = new Blob([bom, csvContent], { type: 'text/csv;charset=utf-8;' });
 
@@ -220,14 +261,12 @@ downloadBtn.onclick = () => {
     const a = document.createElement('a');
     a.href = url;
     const today = new Date().toISOString().split('T')[0];
-    a.download = `diary_backup_${today}.csv`;
+    a.download = `毎日絵文字_backup_${today}.csv`;
     a.click();
 
     // 6. 後片付け
     setTimeout(() => URL.revokeObjectURL(url), 100);
 };
-
-
 
 renderCalendar();
 
