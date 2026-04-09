@@ -1,6 +1,6 @@
 :root {
     --bg-main: #f8f9fa;
-    --accent: #ffb300;
+    --accent: #ffcd83;
     --highlight-color: #fff9c4;
     /* 検索該当日の背景色 */
     --text-main: #2c3e50;
@@ -50,7 +50,6 @@ body {
     cursor: pointer;
     font-size: 0.8rem;
     white-space: nowrap;
-    /* 文字が折り返さないように */
     transition: background 0.2s;
 }
 
@@ -59,13 +58,13 @@ body {
     /* 押した時に少し暗く */
 }
 
-/*　　日付　*/
+/*　日付　*/
 h2 {
     text-align: center;
     margin-bottom: 2vh;
 }
 
-/*　　カテゴリ　*/
+/*　カテゴリ　*/
 h3 {
     color: #505050;
     font-size: 1em;
@@ -225,7 +224,7 @@ h3 {
     font-size: 1.5rem;
 }
 
-/* ★ハイライト表示 */
+/* ハイライト表示 */
 .day-cell.highlight {
     background-color: var(--highlight-color);
     border-color: var(--accent);
@@ -249,12 +248,16 @@ h3 {
 
 .editor-modal {
     background: white;
-    width: 92%;
-    max-width: 400px;
+    width: 100%;
+    max-width: 500px;
     padding: 20px;
-    border-radius: 24px;
+    border-radius: 20px 20px 0 0;
+    /* キーボードが出た時に中身をスクロール可能にする */
     max-height: 90vh;
     overflow-y: auto;
+    transition: bottom 0.3s ease-out;
+    /* 位置の変化をスムーズに */
+    position: relative;
 }
 
 .mood-selector {
@@ -263,12 +266,11 @@ h3 {
     gap: 8px;
 }
 
-/*　　　　*/
 .mood-item {
     display: flex;
     flex-direction: column;
     align-items: center;
-    border: 2px solid transparent;
+    border: 2.5px solid transparent;
     background: #f9f9f9;
     border-radius: 12px;
     cursor: pointer;
@@ -287,7 +289,6 @@ h3 {
 
 .mood-item.selected {
     border-color: var(--accent);
-    background: #fffde7;
 }
 
 .emoji-tags {
@@ -303,12 +304,13 @@ h3 {
     background: #f9f9f9;
     border: 1px solid #eee;
     padding: 8px 0;
-    border-radius: 12px;
+    border-radius: 17px;
     cursor: pointer;
 }
 
 .tag-item .emoji {
-    font-size: 1.3rem;
+    font-size: 1.7rem;
+    opacity: 0.9;
 }
 
 .tag-item .label {
@@ -323,17 +325,21 @@ h3 {
 
 textarea {
     width: 100%;
-    height: 80px;
+    height: 60px;
     padding: 12px;
     border-radius: 12px;
     border: 1px solid #ddd;
-    margin-bottom: 15px;
+    font-size: 15px;
+    margin-bottom: 10px;
     box-sizing: border-box;
+    appearance: none;
+    -webkit-appearance: none;
 }
+
 
 .primary-btn {
     width: 100%;
-    background: var(--accent);
+    background: #ffa318;
     color: white;
     padding: 14px;
     border: none;
@@ -362,4 +368,31 @@ textarea {
 
 * {
     box-sizing: border-box;
+}
+
+/* 入力中に背景を固定する（JSで制御） */
+body.modal-open {
+    overflow: hidden;
+    position: fixed;
+    width: 100%;
+}
+
+#mood5 {
+    background-color: #e7ffe0;
+}
+
+#mood4 {
+    background-color: #bdffbd;
+}
+
+#mood3 {
+    background-color: #aaf0aa;
+}
+
+#mood2 {
+    background-color: #abe4ab;
+}
+
+#mood1 {
+    background-color: #b2d1b2;
 }
