@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>毎日絵文字</title>
     <link rel="stylesheet" href="style.css">
 </head>
@@ -12,7 +12,23 @@
     <div class="app-container">
         <header class="calendar-header">
             <button id="prev-month" class="nav-btn">&lt;</button>
-            <h1 id="current-month-display">2026年3月</h1>
+            <div class="picker-group">
+                <select id="year-select"></select><span>年</span>
+                <select id="month-select">
+                    <option value="0">1</option>
+                    <option value="1">2</option>
+                    <option value="2">3</option>
+                    <option value="3">4</option>
+                    <option value="4">5</option>
+                    <option value="5">6</option>
+                    <option value="6">7</option>
+                    <option value="7">8</option>
+                    <option value="8">9</option>
+                    <option value="9">10</option>
+                    <option value="10">11</option>
+                    <option value="11">12</option>
+                </select><span>月</span>
+            </div>
             <button id="next-month" class="nav-btn">&gt;</button>
         </header>
 
@@ -22,59 +38,69 @@
                 <button id="reset-search" class="reset-btn hidden">戻す</button>
                 <button id="download-btn" class="download-btn">保存</button>
             </div>
+            <button id="emoji-search-trigger" class="emoji-trigger-btn">
+                <span>🔍 絵文字で絞り込む</span>
+                <span class="arrow">▼</span>
+            </button>
 
-            <div class="emoji-search-container">
-                <button id="emoji-search-trigger" class="emoji-trigger-btn">
-                    <span>🔍 絵文字で絞り込む</span>
-                    <span class="arrow">▼</span>
-                </button>
-                <div id="emoji-dropdown" class="emoji-dropdown hidden">
-                    <p class="dropdown-label">気分から探す</p>
-                    <div class="emoji-grid-sm" id="mood-search-options">
-                        <span class="search-emoji-item" data-val="5">🤩</span>
-                        <span class="search-emoji-item" data-val="4">😊</span>
-                        <span class="search-emoji-item" data-val="3">🙂</span>
-                        <span class="search-emoji-item" data-val="2">😐</span>
-                        <span class="search-emoji-item" data-val="1">😞</span>
-                    </div>
-                    <p class="dropdown-label">スタンプから探す</p>
-                    <div class="emoji-grid-sm">
-                        <span class="search-emoji-item">☀️</span><span class="search-emoji-item">☁️</span>
-                        <span class="search-emoji-item">☔</span>
-                        <span class="search-emoji-item">🌪️</span>
-                        <span class="search-emoji-item">🍞</span>
-                        <span class="search-emoji-item">🍜</span>
-                        <span class="search-emoji-item">🍚</span>
-                        <span class="search-emoji-item">🍪</span>
-                        <span class="search-emoji-item">💤</span>
-                        <span class="search-emoji-item">🎀</span>
-                        <span class="search-emoji-item">💊</span>
-                        <span class="search-emoji-item">🏥</span>
-                        <span class="search-emoji-item">😷</span>
-                        <span class="search-emoji-item">👍</span>
-                        <span class="search-emoji-item">🪥</span>
-                        <span class="search-emoji-item">🦴</span>
-                        <span class="search-emoji-item">👟</span>
-                        <span class="search-emoji-item">💪</span>
-                        <span class="search-emoji-item">💻</span>
-                        <span class="search-emoji-item">📖</span>
-                    </div>
+            <div id="emoji-dropdown" class="emoji-dropdown hidden">
+                <p class="dropdown-label">気分から探す</p>
+                <div class="emoji-grid-sm" id="mood-search-options">
+                    <span class="search-emoji-item" data-val="5">🤩</span>
+                    <span class="search-emoji-item" data-val="4">😊</span>
+                    <span class="search-emoji-item" data-val="3">🙂</span>
+                    <span class="search-emoji-item" data-val="2">😐</span>
+                    <span class="search-emoji-item" data-val="1">😞</span>
                 </div>
-
-                <div id="search-results" class="search-results hidden"></div>
+                <p class="dropdown-label">スタンプから探す</p>
+                <div class="emoji-grid-sm">
+                    <span class="search-emoji-item">☀️</span>
+                    <span class="search-emoji-item">☁️</span>
+                    <span class="search-emoji-item">☔</span>
+                    <span class="search-emoji-item">🌪️</span>
+                    <span class="search-emoji-item">🍞</span>
+                    <span class="search-emoji-item">🍜</span>
+                    <span class="search-emoji-item">🍚</span>
+                    <span class="search-emoji-item">🍪</span>
+                    <span class="search-emoji-item">💤</span>
+                    <span class="search-emoji-item">🎀</span>
+                    <span class="search-emoji-item">💊</span>
+                    <span class="search-emoji-item">🏥</span>
+                    <span class="search-emoji-item">😷</span>
+                    <span class="search-emoji-item">👍</span>
+                    <span class="search-emoji-item">🪥</span>
+                    <span class="search-emoji-item">🦴</span>
+                    <span class="search-emoji-item">👟</span>
+                    <span class="search-emoji-item">💪</span>
+                    <span class="search-emoji-item">💻</span>
+                    <span class="search-emoji-item">📖</span>
+                </div>
             </div>
 
+            <div id="search-results" class="search-results hidden"></div>
+
             <div class="weekdays">
-                <div>日</div>
                 <div>月</div>
                 <div>火</div>
                 <div>水</div>
                 <div>木</div>
                 <div>金</div>
                 <div>土</div>
+                <div>日</div>
             </div>
 
             <div id="calendar" class="calendar-grid"></div>
+
+            <div id="day-detail" class="day-detail hidden">
+                <div class="detail-card">
+                    <div class="detail-header">
+                        <span id="detail-date" class="detail-date"></span>
+                        <button id="detail-edit-btn" class="detail-edit-btn">編集</button>
+                    </div>
+                    <div id="detail-emoji-row" class="detail-emoji-row"></div>
+                    <div id="detail-note" class="detail-note"></div>
+                </div>
+            </div>
 
             <div id="modal-overlay" class="modal-overlay hidden">
                 <div class="editor-modal">
@@ -167,15 +193,16 @@
                                     class="label">イライラ</span></button>
                         </div>
                     </div>
-                    <textarea id="note-input" placeholder="日記メモ..."></textarea>
+                    <textarea id="note-input" placeholder="メモを入力..."></textarea>
                     <div class="action-btns">
-                        <button id="save-btn" class="primary-btn">記録を保存</button>
-                        <button id="close-btn" class="secondary-btn">キャンセル</button>
+                        <button id="save-btn" class="primary-btn">保存</button>
+                        <button id="close-btn" class="secondary-btn">閉じる</button>
                     </div>
                 </div>
             </div>
         </div>
-        <script src="script.js"></script>
+    </div>
+    <script src="script.js"></script>
 </body>
 
 </html>
