@@ -1,94 +1,186 @@
+// --- 初期設定と状態管理 ---
 let currentViewDate = new Date();
-const calendarEl = document.getElementById('calendar');
-const monthDisplay = document.getElementById('current-month-display');
-const modalOverlay = document.getElementById('modal-overlay');
-const noteInput = document.getElementById('note-input');
-const keywordSearch = document.getElementById('keyword-search');
-const resetBtn = document.getElementById('reset-search');
-const emojiTrigger = document.getElementById('emoji-search-trigger');
-const emojiDropdown = document.getElementById('emoji-dropdown');
-const searchResults = document.getElementById('search-results');
-
 let selectedDateKey = "";
 let currentMood = 0;
 let selectedTags = [];
-let highlightedDates = []; // 現在ハイライトされている日付リスト
+let highlightedDates = [];
 
 const getDiaryData = () => JSON.parse(localStorage.getItem('dailyEmojiData')) || {};
+const getMoodEmoji = (val) => ['', '😞', '😐', '🙂', '😊', '🤩'][val] || '';
 
-// カレンダー描画
+// DOM要素をすべて取得（エラー防止）
+const elements = {
+    calendar: document.getElementById('calendar'),
+    year: document.getElementById('year-select'),
+    month: document.getElementById('month-select'),
+    modal: document.getElementById('modal-overlay'),
+    note: document.getElementById('note-input'),
+    detail: document.getElementById('day-detail'),
+    detailDate: document.getElementById('detail-date'),
+    detailEmoji: document.getElementById('detail-emoji-row'),
+    detailNote: document.getElementById('detail-note'),
+    detailEdit: document.getElementById('detail-edit-btn'),
+    // 検索・ボタン関連
+    keywordSearch: document.getElementById('keyword-search'),
+    resetBtn: document.getElementById('reset-search'),
+    emojiTrigger: document.getElementById('emoji-search-trigger'),
+    emojiDropdown: document.getElementById('emoji-dropdown'),
+    searchResults: document.getElementById('search-results')
+};
+
+// --- 初期化処理 ---
+function init() {
+    for (let y = 2024; y <= 2030; y++) {
+        const opt = document.createElement('option');
+        opt.value = y;
+        opt.innerText = y;
+        elements.year.appendChild(opt);
+    }
+    elements.year.value = currentViewDate.getFullYear();
+    elements.month.value = currentViewDate.getMonth();
+    renderCalendar();
+}
+
+// --- カレンダー描画 ---
 function renderCalendar() {
-    calendarEl.innerHTML = "";
-    const year = currentViewDate.getFullYear();
-    const month = currentViewDate.getMonth();
-    monthDisplay.innerText = `${year}年${month + 1}月`;
+    if (!elements.calendar) return;
+    elements.calendar.innerHTML = "";
+
+    const year = parseInt(elements.year.value);
+    const month = parseInt(elements.month.value);
+    currentViewDate = new Date(year, month, 1);
 
     const firstDay = new Date(year, month, 1).getDay();
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const data = getDiaryData();
 
-    for (let i = 0; i < firstDay; i++) {
-        const emptyCell = document.createElement('div');
-        emptyCell.className = 'day-cell empty';
-        calendarEl.appendChild(emptyCell);
+    // 日本の月曜日始まり等調整が必要ならここで（現在は日曜始まり想定）
+    for (let i = 0; i < (firstDay === 0 ? 6 : firstDay - 1); i++) {
+        const empty = document.createElement('div');
+        empty.className = 'day-cell empty';
+        elements.calendar.appendChild(empty);
     }
 
     for (let day = 1; day <= daysInMonth; day++) {
         const dateStr = `${year}-${(month + 1).toString().padStart(2, '0')}-${day.toString().padStart(2, '0')}`;
         const dayData = data[dateStr];
+
         const cell = document.createElement('div');
         cell.className = 'day-cell';
-        cell.dataset.date = dateStr; // 検索用
 
-        // ハイライト状態の復元
-        if (highlightedDates.includes(dateStr)) {
-            cell.classList.add('highlight');
-        }
+        // ハイライトと選択状態の付与
+        if (highlightedDates.includes(dateStr)) cell.classList.add('highlight');
+        if (selectedDateKey === dateStr) cell.classList.add('selected');
 
         cell.innerHTML = `
             <span class="date-num">${day}</span>
             <span class="day-emoji">${dayData ? getMoodEmoji(dayData.mood) : ''}</span>
         `;
-        cell.onclick = () => openEditor(dateStr);
-        calendarEl.appendChild(cell);
+
+        cell.onclick = () => selectDate(dateStr);
+        elements.calendar.appendChild(cell);
     }
 }
 
-function getMoodEmoji(val) {
-    return ['', '😞', '😐', '🙂', '😊', '🤩'][val] || '';
-}
+// --- 日付選択と詳細表示 ---
+function selectDate(dateStr) {
+    selectedDateKey = dateStr;
+    const data = getDiaryData()[dateStr];
 
-// 検索結果に基づきカレンダーをハイライト
-function applyHighlights(keys) {
-    highlightedDates = keys;
-    resetBtn.classList.remove('hidden');
-    renderCalendar(); // 再描画してクラスを適用
-}
+    if (data) {
+        elements.detailDate.innerText = dateStr;
+        const mood = getMoodEmoji(data.mood);
+        const tags = data.tags.map(t => `<span>${t}</span>`).join(' ');
+        elements.detailEmoji.innerHTML = `${mood} ${tags}`;
+        elements.detailNote.innerText = data.note || "メモなし";
+        elements.detailEdit.onclick = () => openEditor(dateStr);
 
-// リセット機能
-function resetSearch() {
-    highlightedDates = [];
-    keywordSearch.value = "";
-    resetBtn.classList.add('hidden');
-    searchResults.classList.add('hidden');
+        elements.detail.classList.remove('hidden');
+        elements.detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    } else {
+        elements.detail.classList.add('hidden');
+        openEditor(dateStr);
+    }
     renderCalendar();
 }
 
-resetBtn.onclick = resetSearch;
+// --- モーダル操作 ---
+function openEditor(dateStr) {
+    selectedDateKey = dateStr;
+    document.getElementById('selected-date-label').innerText = dateStr;
+    const data = getDiaryData()[dateStr] || { mood: 0, tags: [], note: "" };
 
-// キーワード検索
-keywordSearch.oninput = (e) => {
-    const query = e.target.value.trim();
-    if (!query) { resetSearch(); return; }
+    currentMood = data.mood;
+    selectedTags = [...data.tags];
+    elements.note.value = data.note;
 
-    const data = getDiaryData();
-    const filtered = Object.keys(data).filter(date => data[date].note.includes(query));
-    showResults(filtered, data);
-    applyHighlights(filtered);
+    elements.modal.classList.remove('hidden');
+    document.body.classList.add('modal-open');
+    updateFormUI();
+}
+
+function updateFormUI() {
+    document.querySelectorAll('.mood-item').forEach(btn =>
+        btn.classList.toggle('selected', btn.dataset.mood == currentMood));
+    document.querySelectorAll('.tag-item').forEach(btn => {
+        const emoji = btn.querySelector('.emoji').innerText;
+        btn.classList.toggle('selected', selectedTags.includes(emoji));
+    });
+}
+
+// --- 検索システム ---
+
+// ハイライト適用関数（新規作成）
+function applyHighlights(keys) {
+    highlightedDates = keys;
+    if (keys.length > 0 || elements.keywordSearch.value.trim() !== "") {
+        elements.resetBtn.classList.remove('hidden');
+    } else {
+        elements.resetBtn.classList.add('hidden');
+    }
+    renderCalendar();
+}
+
+// 検索結果をクリックした時の移動関数（新規作成）
+function openAndSearch(dateStr) {
+    const [y, m, d] = dateStr.split('-');
+    elements.year.value = parseInt(y);
+    elements.month.value = parseInt(m) - 1; // JSの月は0始まり
+
+    elements.searchResults.classList.add('hidden');
+    elements.emojiDropdown.classList.add('hidden');
+
+    renderCalendar();
+    selectDate(dateStr);
+}
+
+// 結果描画関数（HTMLの崩れを修正）
+function showResults(keys, data) {
+    keys.sort((a, b) => b.localeCompare(a));
+    if (keys.length === 0) {
+        elements.searchResults.innerHTML = '<div class="result-item" style="color:#ccc;">見つかりませんでした</div>';
+    } else {
+        elements.searchResults.innerHTML = keys.map(key => {
+            const entry = data[key];
+            const moodEmoji = getMoodEmoji(entry.mood);
+            const noteText = entry.note || '(メモなし)';
+            return `
+                <div class="result-item" onclick="openAndSearch('${key}')">
+                    <span class="res-date" style="font-weight:bold;">${key}</span>
+                    <span class="res-mood">${moodEmoji}</span>
+                    <span class="res-note" style="color:#666;">${noteText}</span>
+                </div>
+            `;
+        }).join('');
+    }
+    elements.searchResults.classList.remove('hidden');
+}
+
+// 1. 絵文字検索
+elements.emojiTrigger.onclick = () => {
+    elements.emojiDropdown.classList.toggle('hidden');
+    elements.searchResults.classList.add('hidden');
 };
-
-// 絵文字検索
-emojiTrigger.onclick = () => emojiDropdown.classList.toggle('hidden');
 
 document.querySelectorAll('.search-emoji-item').forEach(item => {
     item.onclick = () => {
@@ -98,107 +190,104 @@ document.querySelectorAll('.search-emoji-item').forEach(item => {
             const entry = data[date];
             return entry.mood == val || entry.tags.includes(val);
         });
-        emojiDropdown.classList.add('hidden');
+
+        elements.emojiDropdown.classList.add('hidden');
+        elements.keywordSearch.value = ""; // キーワード側をクリア
         showResults(filtered, data);
         applyHighlights(filtered);
     };
 });
 
-function showResults(keys, data) {
-    keys.sort((a, b) => b.localeCompare(a));
-    if (keys.length === 0) {
-        searchResults.innerHTML = '<div class="result-item" style="color:#ccc;">見つかりませんでした</div>';
-    } else {
-        searchResults.innerHTML = keys.map(key => `
-            <div class="result-item" onclick="openAndSearch('${key}')">
-                <span class="res-date">${key}</span>
-                <span class="res-mood">${getMoodEmoji(data[key].mood)}</span>
-                <span class="res-note">${data[key].note || '(メモなし)'}</span>
-            </div>
-        `).join('');
+// 2. キーワード検索（新規追加）
+elements.keywordSearch.addEventListener('input', (e) => {
+    const term = e.target.value.trim().toLowerCase();
+
+    if (!term) {
+        elements.searchResults.classList.add('hidden');
+        applyHighlights([]);
+        return;
     }
-    searchResults.classList.remove('hidden');
-}
 
-// モーダル処理
-function openEditor(dateStr) {
-    selectedDateKey = dateStr;
-    document.getElementById('selected-date-label').innerText = `${dateStr} の記録`;
-    const data = getDiaryData()[dateStr] || { mood: 0, tags: [], note: "" };
-    currentMood = data.mood;
-    selectedTags = data.tags;
-    noteInput.value = data.note;
-    modalOverlay.classList.remove('hidden');
-    updateFormUI();
-}
+    const data = getDiaryData();
+    const filtered = Object.keys(data).filter(date => {
+        const note = data[date].note || "";
+        return note.toLowerCase().includes(term);
+    });
 
-window.openAndSearch = (dateStr) => {
-    searchResults.classList.add('hidden');
-    openEditor(dateStr);
+    elements.emojiDropdown.classList.add('hidden');
+    showResults(filtered, data);
+    applyHighlights(filtered);
+});
+
+// リセットボタン（新規追加）
+elements.resetBtn.onclick = () => {
+    elements.keywordSearch.value = "";
+    elements.searchResults.classList.add('hidden');
+    elements.emojiDropdown.classList.add('hidden');
+    applyHighlights([]); // ハイライト解除
 };
 
+// 外側クリックで検索・ドロップダウンを閉じる処理（修正）
+document.addEventListener('click', (e) => {
+    if (!elements.emojiTrigger.contains(e.target) && !elements.emojiDropdown.contains(e.target)) {
+        elements.emojiDropdown.classList.add('hidden');
+    }
+    if (!elements.keywordSearch.contains(e.target) && !elements.searchResults.contains(e.target) && !elements.resetBtn.contains(e.target)) {
+        elements.searchResults.classList.add('hidden');
+    }
+});
+
+// --- 各種ボタンイベント ---
+
+// 保存
 document.getElementById('save-btn').onclick = () => {
     if (currentMood == 0) {
         document.getElementById('mood-warning').classList.remove('hidden');
         return;
     }
     const data = getDiaryData();
-    data[selectedDateKey] = { mood: currentMood, tags: selectedTags, note: noteInput.value };
+    data[selectedDateKey] = { mood: currentMood, tags: selectedTags, note: elements.note.value };
     localStorage.setItem('dailyEmojiData', JSON.stringify(data));
-    modalOverlay.classList.add('hidden');
+
+    elements.modal.classList.add('hidden');
+    document.body.classList.remove('modal-open');
+    selectDate(selectedDateKey);
+};
+
+// 閉じる
+document.getElementById('close-btn').onclick = () => {
+    elements.modal.classList.add('hidden');
+    document.body.classList.remove('modal-open');
+};
+
+// カレンダーの月移動
+elements.year.onchange = renderCalendar;
+elements.month.onchange = renderCalendar;
+document.getElementById('prev-month').onclick = () => {
+    let m = parseInt(elements.month.value) - 1;
+    let y = parseInt(elements.year.value);
+    if (m < 0) { m = 11; y--; }
+    elements.year.value = y;
+    elements.month.value = m;
     renderCalendar();
 };
-// --- スマホキーボード対策：Visual Viewport API ---
-if (window.visualViewport) {
-    window.visualViewport.addEventListener('resize', () => {
-        if (!modalOverlay.classList.contains('hidden')) {
-            // キーボードの高さを計算
-            const offset = window.innerHeight - window.visualViewport.height;
-
-            // モーダル全体をキーボード分だけ上に持ち上げる
-            // 入力欄が隠れるのを防ぐ
-            modalOverlay.style.bottom = `${offset}px`;
-
-            // スムーズにスクロールして入力欄を見せる
-            if (offset > 0) {
-                document.activeElement?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            }
-        } else {
-            modalOverlay.style.bottom = '0';
-        }
-    });
-}
-
-// --- モーダル開閉時の背景固定処理 ---
-const originalOpenEditor = openEditor;
-openEditor = (dateStr) => {
-    originalOpenEditor(dateStr); // 元の処理を実行
-    document.body.classList.add('modal-open'); // 背景スクロール禁止
-    modalOverlay.style.bottom = '0'; // 位置リセット
+document.getElementById('next-month').onclick = () => {
+    let m = parseInt(elements.month.value) + 1;
+    let y = parseInt(elements.year.value);
+    if (m > 11) { m = 0; y++; }
+    elements.year.value = y;
+    elements.month.value = m;
+    renderCalendar();
 };
 
-const originalCloseBtnClick = document.getElementById('close-btn').onclick;
-document.getElementById('close-btn').onclick = () => {
-    if (originalCloseBtnClick) originalCloseBtnClick();
-    document.body.classList.remove('modal-open'); // 背景スクロール解禁
-};
-
-// 保存時も背景固定を解除
-const originalSaveBtnClick = document.getElementById('save-btn').onclick;
-document.getElementById('save-btn').onclick = () => {
-    if (originalSaveBtnClick()) { // 保存成功時（バリデーションを通った時）
-        document.body.classList.remove('modal-open');
-    }
-};
-
-// UI更新
-document.getElementById('prev-month').onclick = () => { currentViewDate.setMonth(currentViewDate.getMonth() - 1); renderCalendar(); };
-document.getElementById('next-month').onclick = () => { currentViewDate.setMonth(currentViewDate.getMonth() + 1); renderCalendar(); };
-
+// エディタ内の気分・タグ選択
 document.querySelectorAll('.mood-item').forEach(btn => {
-    btn.onclick = () => { currentMood = btn.dataset.mood; updateFormUI(); document.getElementById('mood-warning').classList.add('hidden'); };
+    btn.onclick = () => {
+        currentMood = btn.dataset.mood;
+        updateFormUI();
+        document.getElementById('mood-warning').classList.add('hidden');
+    };
 });
-
 document.querySelectorAll('.tag-item').forEach(btn => {
     btn.onclick = () => {
         const emoji = btn.querySelector('.emoji').innerText;
@@ -207,66 +296,33 @@ document.querySelectorAll('.tag-item').forEach(btn => {
     };
 });
 
-function updateFormUI() {
-    document.querySelectorAll('.mood-item').forEach(btn => btn.classList.toggle('selected', btn.dataset.mood == currentMood));
-    document.querySelectorAll('.tag-item').forEach(btn => {
-        const emoji = btn.querySelector('.emoji').innerText;
-        btn.classList.toggle('selected', selectedTags.includes(emoji));
+// CSVダウンロード
+document.getElementById('download-btn').onclick = () => {
+    const data = getDiaryData();
+    if (Object.keys(data).length === 0) return alert("データがありません");
+    let csv = "\uFEFF日付,気分,スタンプ,メモ\n";
+    Object.keys(data).sort().forEach(k => {
+        const row = data[k];
+        const note = (row.note || "").replace(/"/g, '""').replace(/\n/g, ' ');
+        csv += `${k},${getMoodEmoji(row.mood)},"${row.tags.join(' ')}","${note}"\n`;
     });
-}
-
-document.getElementById('close-btn').onclick = () => modalOverlay.classList.add('hidden');
-document.addEventListener('click', (e) => {
-    if (!emojiTrigger.contains(e.target) && !emojiDropdown.contains(e.target)) emojiDropdown.classList.add('hidden');
-    if (!keywordSearch.contains(e.target) && !searchResults.contains(e.target) && !resetBtn.contains(e.target)) searchResults.classList.add('hidden');
-});
-
-const downloadBtn = document.getElementById('download-btn');
-
-downloadBtn.onclick = () => {
-    // 1. localStorageからデータを取得してオブジェクトに変換
-    const rawData = localStorage.getItem('dailyEmojiData');
-    if (!rawData || rawData === '{}') {
-        alert("保存するデータがまだありません。");
-        return;
-    }
-    const data = JSON.parse(rawData);
-
-    // 2. CSVのヘッダーを作成
-    let csvContent = "日付,気分,スタンプ,メモ\n";
-
-    // 3. データを日付順に並び替えて、1行ずつCSV形式に変換
-    Object.keys(data).sort().forEach(date => {
-        const entry = data[date];
-
-        // 数値の気分を絵文字に戻す（読みやすさ重視）
-        const moodEmoji = getMoodEmoji(entry.mood);
-
-        // スタンプ（配列）をスペース区切りの文字列にする
-        const tags = entry.tags.join(' ');
-
-        // メモ内の改行やダブルクォーテーションがCSVを壊さないように調整
-        const safeNote = entry.note.replace(/"/g, '""').replace(/\n/g, ' ');
-
-        // カンマ区切りで1行分を追加
-        csvContent += `${date},${moodEmoji},"${tags}","${safeNote}"\n`;
-    });
-
-    // 4. 文字化け防止（BOM付きUTF-8）の設定
-    const bom = new Uint8Array([0xEF, 0xBB, 0xBF]);
-    const blob = new Blob([bom, csvContent], { type: 'text/csv;charset=utf-8;' });
-
-    // 5. ダウンロード実行
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    const today = new Date().toISOString().split('T')[0];
-    a.download = `毎日絵文字_backup_${today}.csv`;
+    a.download = `diary_backup.csv`;
     a.click();
-
-    // 6. 後片付け
-    setTimeout(() => URL.revokeObjectURL(url), 100);
 };
 
-renderCalendar();
+// キーボード対策
+if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', () => {
+        if (!elements.modal.classList.contains('hidden')) {
+            const offset = window.innerHeight - window.visualViewport.height;
+            elements.modal.style.bottom = `${offset}px`;
+        }
+    });
+}
 
+// 実行
+init();
