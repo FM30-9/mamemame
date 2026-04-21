@@ -27,6 +27,22 @@ body.modal-open {
     width: 100%;
 }
 
+/* ローディング */
+#loading {
+    position: fixed;
+    z-index: 9999;
+    display: grid;
+    height: 100%;
+    width: auto;
+    object-fit: cover;
+    object-position: center;
+}
+
+.loaded {
+    display: none;
+    visibility: hidden;
+}
+
 .app-container {
     width: 100%;
     max-width: 500px;
