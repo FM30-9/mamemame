@@ -266,6 +266,35 @@ body.modal-open {
     background-color: #fffde7;
 }
 
+/* 土曜日のスタイル */
+.day-cell.sat {
+    background-color: #e3f2fd;
+    /* 薄い青 */
+}
+
+.day-cell.sat .date-num {
+    color: #1976d2;
+    /* 濃い青 */
+}
+
+/* 日曜日のスタイル */
+.day-cell.sun {
+    background-color: #ffebee;
+    /* 薄い赤 */
+}
+
+.day-cell.sun .date-num {
+    color: #d32f2f;
+    /* 濃い赤 */
+}
+
+/* 祝日や今日の色と重なっても見やすくするための調整 */
+.day-cell.highlight.sat,
+.day-cell.highlight.sun {
+    background-color: #fff9c4;
+    /* 検索ヒット時は黄色を優先 */
+}
+
 /* 詳細エリア */
 .day-detail {
     margin-top: 20px;
