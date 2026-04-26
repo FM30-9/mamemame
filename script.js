@@ -15,7 +15,6 @@ window.addEventListener('load', () => {
     }, 2000); // 2秒後に消す
 });
 
-
 // DOM要素をすべて取得（エラー防止）
 const elements = {
     calendar: document.getElementById('calendar'),
@@ -76,6 +75,10 @@ function renderCalendar() {
         const cell = document.createElement('div');
         cell.className = 'day-cell';
 
+        const dayOfWeek = (firstDay + day - 1) % 7;
+        if (dayOfWeek === 0) cell.classList.add('sun'); // 0は日曜
+        if (dayOfWeek === 6) cell.classList.add('sat'); // 6は土曜
+
         // ハイライトと選択状態の付与
         if (highlightedDates.includes(dateStr)) cell.classList.add('highlight');
         if (selectedDateKey === dateStr) cell.classList.add('selected');
@@ -115,15 +118,24 @@ function selectDate(dateStr) {
 // --- モーダル操作 ---
 function openEditor(dateStr) {
     selectedDateKey = dateStr;
-    document.getElementById('selected-date-label').innerText = dateStr;
+    // 曜日の計算と表示
+    const days = ['日', '月', '火', '水', '木', '金', '土'];
+    const dateObj = new Date(dateStr.replace(/-/g, '/'));
+    const dayName = days[dateObj.getDay()];
+    document.getElementById('selected-date-label').innerText = `${dateStr} (${dayName})`;
+    // データの読み込み
     const data = getDiaryData()[dateStr] || { mood: 0, tags: [], note: "" };
-
     currentMood = data.mood;
     selectedTags = [...data.tags];
     elements.note.value = data.note;
-
+    // モーダルを表示
     elements.modal.classList.remove('hidden');
     document.body.classList.add('modal-open');
+    //　　スクロール位置を一番上に戻す　
+    const modalContent = elements.modal.querySelector('.editor-modal');
+    if (modalContent) {
+        modalContent.scrollTop = 0;
+    }
     updateFormUI();
 }
 
@@ -259,7 +271,12 @@ document.getElementById('save-btn').onclick = () => {
 
     elements.modal.classList.add('hidden');
     document.body.classList.remove('modal-open');
-    selectDate(selectedDateKey);
+
+    // 選択状態をリセット
+    selectedDateKey = "";
+    // 詳細エリアを隠す
+    elements.detail.classList.add('hidden');
+    renderCalendar();
 };
 
 // 閉じる
