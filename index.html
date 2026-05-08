@@ -6,13 +6,14 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>毎日絵文字</title>
     <link rel="stylesheet" href="style.css">
-  <script src="script.js" defer></script>
+    <script src="script.js" defer></script>
 </head>
 
 <body>
     <div id="loading">
-        <img src="rogo1.gif">
+        <img id="rogo" src="rogo1.gif">
     </div>
+
     <div class="app-container">
         <header class="calendar-header">
             <button id="prev-month" class="nav-btn">&lt;</button>
@@ -44,6 +45,7 @@
             </div>
             <button id="emoji-search-trigger" class="emoji-trigger-btn">
                 <span>🔍 絵文字で絞り込む</span>
+
                 <span class="arrow">▼</span>
             </button>
 
@@ -62,10 +64,6 @@
                     <span class="search-emoji-item">☁️</span>
                     <span class="search-emoji-item">☔</span>
                     <span class="search-emoji-item">🌪️</span>
-                    <span class="search-emoji-item">🍞</span>
-                    <span class="search-emoji-item">🍜</span>
-                    <span class="search-emoji-item">🍚</span>
-                    <span class="search-emoji-item">🍪</span>
                     <span class="search-emoji-item">💤</span>
                     <span class="search-emoji-item">🎀</span>
                     <span class="search-emoji-item">💊</span>
@@ -78,6 +76,7 @@
                     <span class="search-emoji-item">💪</span>
                     <span class="search-emoji-item">💻</span>
                     <span class="search-emoji-item">📖</span>
+                    <span class="search-emoji-item">💼</span>
                 </div>
             </div>
 
@@ -168,6 +167,7 @@
                             <button class="tag-item"><span class="emoji">📖</span><span class="label">勉強</span></button>
                             <button class="tag-item"><span class="emoji">🧺</span><span class="label">洗濯</span></button>
                             <button class="tag-item"><span class="emoji">🧹</span><span class="label">掃除</span></button>
+                            <button class="tag-item"><span class="emoji">💼</span><span class="label">掃除</span></button>
                         </div>
 
                         <h3>感情</h3>
