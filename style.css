@@ -519,3 +519,9 @@ textarea {
     font-weight: bold;
     color: #888;
 }
+
+/* 今日の日付のスタイル */
+.day-cell.today {
+    border: 2px solid #4a90e2 !important;
+    /* 目立つ青い枠線 */
+}
