@@ -12,7 +12,7 @@ const getMoodEmoji = (val) => ['', '😞', '😐', '🙂', '😊', '🤩'][val] 
 window.addEventListener('load', () => {
     setTimeout(() => {
         document.getElementById('loading').classList.add('loaded');
-    }, 2000); // 2秒後に消す
+    }, 1000); // 2秒後に消す
 });
 
 // DOM要素をすべて取得（エラー防止）
@@ -61,7 +61,11 @@ function renderCalendar() {
     const daysInMonth = new Date(year, month + 1, 0).getDate();
     const data = getDiaryData();
 
-    // 日本の月曜日始まり等調整が必要ならここで（現在は日曜始まり想定）
+    // ★追加：今日の年月日を「YYYY-MM-DD」の形式で取得
+    const now = new Date();
+    const todayStr = `${now.getFullYear()}-${(now.getMonth() + 1).toString().padStart(2, '0')}-${now.getDate().toString().padStart(2, '0')}`;
+
+    //月曜日始まり
     for (let i = 0; i < (firstDay === 0 ? 6 : firstDay - 1); i++) {
         const empty = document.createElement('div');
         empty.className = 'day-cell empty';
@@ -80,6 +84,8 @@ function renderCalendar() {
         if (dayOfWeek === 6) cell.classList.add('sat'); // 6は土曜
 
         // ハイライトと選択状態の付与
+        if (dateStr === todayStr) cell.classList.add('today');
+
         if (highlightedDates.includes(dateStr)) cell.classList.add('highlight');
         if (selectedDateKey === dateStr) cell.classList.add('selected');
 
@@ -344,7 +350,7 @@ if (window.visualViewport) {
     window.visualViewport.addEventListener('resize', () => {
         if (!elements.modal.classList.contains('hidden')) {
             const offset = window.innerHeight - window.visualViewport.height;
-            elements.modal.style.bottom = `${offset}px`;
+            elements.modal.style.bottom = `${offset + 10}px`;
         }
     });
 }
