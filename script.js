@@ -5,10 +5,11 @@ let currentMood = 0;
 let selectedTags = [];
 let highlightedDates = [];
 
-const loarding = document.querySelector('#loading');
+// --- const loarding = document.querySelector('#loading'); ---
 const getDiaryData = () => JSON.parse(localStorage.getItem('dailyEmojiData')) || {};
 const getMoodEmoji = (val) => ['', '😞', '😐', '🙂', '😊', '🤩'][val] || '';
 
+// --- 今いらない ---
 window.addEventListener('load', () => {
     setTimeout(() => {
         document.getElementById('loading').classList.add('loaded');
