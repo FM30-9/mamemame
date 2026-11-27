@@ -27,7 +27,7 @@ body.modal-open {
     width: 100%;
 }
 
-/* ローディング */
+/* ローディング
 #loading {
     position: fixed;
     z-index: 9999;
@@ -37,12 +37,14 @@ body.modal-open {
     object-fit: cover;
     object-position: center;
 }
+ 
 
 .loaded {
     display: none;
     visibility: hidden;
 }
 
+*/
 .app-container {
     width: 100%;
     max-width: 500px;
